@@ -1,0 +1,41 @@
+stages:
+  - "build"
+  - "test"
+  - "deploy"
+
+build:
+  services:
+    - docker:dind
+  tags:
+    - bootcamp
+    - fi
+  stage: build
+  image: docker:stable
+  script:
+    - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
+    - docker build -t registry.hamdocker.ir/registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} .
+    - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
+
+test:
+  tags:
+    - bootcamp
+    - fi
+  stage: test
+  image: python:3.11-slim
+  script:
+    - pip3 install -r requirements.txt
+    - python3 manage.py makemigrations
+    - python3 manage.py migrate
+    - python3 manage.py test
+
+deploy:
+  tags:
+    - bootcamp
+    - ir
+  stage: deploy
+  image: hamravesh.hamdocker.ir/public/darkube-cli:v1.1
+  only:
+    refs:
+    - main
+  script:
+  - darkube deploy --token ${DEPLOY_TOKEN} --app-id ${APP_ID} --image-tag ${CI_COMMIT_SHORT_SHA}
