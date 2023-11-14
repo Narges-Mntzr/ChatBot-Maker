@@ -13,7 +13,7 @@ build:
   image: docker:stable
   script:
     - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
-    - docker build -t registry.hamdocker.ir/registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} .
+    - docker build -t registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} .
     - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
 
 test:
