@@ -1,3 +1,5 @@
+import os
+
 """
 Django settings for myproject project.
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-2_e1mq3$2v#9^*dqlr=o4=av*4=$6e*@2o9$vf39e8etx-=g2n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["chatbotmaker.darkube.app"]
 
 
 # Application definition
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'chatbot.apps.ChatbotsConfig',
 ]
 
 MIDDLEWARE = [
@@ -73,10 +76,16 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+DB_DIR = os.environ.get("DB_DIR")
+if DB_DIR:
+    DB_DIR = Path(DB_DIR)
+else:
+    DB_DIR = BASE_DIR
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': DB_DIR / 'db.sqlite3',
     }
 }
 
@@ -123,3 +132,5 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "chatbot.CustomUser"
