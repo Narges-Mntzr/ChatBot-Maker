@@ -17,16 +17,16 @@ build:
     - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
 
 test:
+  services:
+    - docker:dind
   tags:
     - bootcamp
     - fi
   stage: test
-  image: python:3.11-slim
+  image: docker:stable
   script:
-    - pip3 install -r requirements.txt
-    - python3 manage.py makemigrations
-    - python3 manage.py migrate
-    - python3 manage.py test
+    - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
+    - docker run registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} python app/myproject/manage.py test
 
 deploy:
   tags:
