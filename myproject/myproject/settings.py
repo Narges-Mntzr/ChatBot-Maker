@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-2_e1mq3$2v#9^*dqlr=o4=av*4=$6e*@2o9$vf39e8etx-=g2n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["chatbotmaker.darkube.app"]
+ALLOWED_HOSTS = ["chatbotmaker.darkube.app","127.0.0.1"]
 
 # Application definition
 
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'chatbot.apps.ChatbotConfig',
+    'chatbot.apps.ChatbotConfig',
 ]
 
 MIDDLEWARE = [
@@ -133,4 +133,4 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = "chatbot.CustomUser"
+MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')

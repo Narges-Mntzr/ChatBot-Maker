@@ -15,3 +15,5 @@ This file is updated during the implementation of the project and deleted at the
 2. منظور از محتوای چت‌بات دقیقا چیه؟ به هرکدوم از اون پاراگراف‌ها می‌گیم؟
 
 3. مدل "نظر" برای چیست؟
+
+4. prompt چیه دقیقا؟
