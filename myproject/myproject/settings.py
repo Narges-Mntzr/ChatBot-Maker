@@ -29,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["chatbotmaker.darkube.app"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'chatbot.apps.ChatbotsConfig',
+    'chatbot.apps.ChatbotConfig',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +52,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'myproject.urls'
+CSRF_TRUSTED_ORIGINS = ["https://*.darkube.app", "http://*.darkube.app"]
 
 TEMPLATES = [
     {
