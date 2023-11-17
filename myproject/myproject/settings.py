@@ -76,16 +76,19 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DB_DIR = os.environ.get("DB_DIR")
-if DB_DIR:
-    DB_DIR = Path(DB_DIR)
-else:
-    DB_DIR = BASE_DIR
+import time
+
+# Add a delay to allow PostgreSQL to start up
+time.sleep(10) 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_DIR / 'db.sqlite3',
+    "default": {        
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "LhY1SszP7gViN86EL9hCZqjq0bZsRS86",
+        "HOST": "ostgres.torob-bootcamp-1402-montazeri.svc",
+        "PORT": 5432,
     }
 }
 

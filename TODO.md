@@ -6,8 +6,9 @@ This file is updated during the implementation of the project and deleted at the
 - [x] Deploying the project using Hamravesh and creating a CI/CD pipeline with three build/test/deploy stages.
 - [x] Hash password.
 - [ ] Connect database to postgress.
-- [ ] Set logout
+- [ ] Set logout.
 - [ ] Landing page.
+- [ ] Test.
 
 ### Questions:
 

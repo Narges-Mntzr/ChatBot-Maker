@@ -11,9 +11,6 @@ RUN pip install -r app/requirements.txt
 
 COPY ./ /app
 
-# for moodel.imgField
-RUN python -m pip install Pillow 
-
 # run django apps
 CMD ["python", "app/myproject/manage.py", "runserver", "0.0.0.0:8000"]
 
