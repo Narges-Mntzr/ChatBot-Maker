@@ -87,7 +87,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "LhY1SszP7gViN86EL9hCZqjq0bZsRS86",
-        "HOST": "ostgres.torob-bootcamp-1402-montazeri.svc",
+        "HOST": "postgres.torob-bootcamp-1402-montazeri.svc",
         "PORT": 5432,
     }
 }
