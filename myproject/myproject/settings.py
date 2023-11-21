@@ -81,6 +81,7 @@ import time
 # Add a delay to allow PostgreSQL to start up
 time.sleep(10) 
 
+#todo: add envirenment variable
 DATABASES = {
     "default": {        
         "ENGINE": "django.db.backends.postgresql",
@@ -88,6 +89,8 @@ DATABASES = {
         "USER": "postgres",
         "PASSWORD": "LhY1SszP7gViN86EL9hCZqjq0bZsRS86",
         "HOST": "postgres.torob-bootcamp-1402-montazeri.svc",
+        # "PASSWORD": "postgres",
+        # "HOST": "127.0.0.1",
         "PORT": 5432,
     }
 }
@@ -129,11 +132,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = os.path.join(BASE_DIR, "static/")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
