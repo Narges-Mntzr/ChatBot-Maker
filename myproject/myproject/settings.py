@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 #todo: removo it on production
 import time
 # Add a delay to allow PostgreSQL to start up
-time.sleep(10) 
+time.sleep(20) 
 
 #todo: add envirenment variable
 DATABASES = {
@@ -87,10 +87,8 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres",
-        "PASSWORD": "LhY1SszP7gViN86EL9hCZqjq0bZsRS86",
-        "HOST": "postgres.torob-bootcamp-1402-montazeri.svc",
-        # "PASSWORD": "postgres",
-        # "HOST": "127.0.0.1",
+        "HOST": os.environ.get("DB_HOST") if os.environ.get("DB_HOST") else "127.0.0.1",
+        "PASSWORD": os.environ.get("DB_PASS") if os.environ.get("DB_PASS") else "postgres",
         "PORT": 5432,
     }
 }
@@ -139,5 +137,11 @@ STATIC_URL = os.path.join(BASE_DIR, "static/")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_DIR = os.environ.get("MEDIA_DIR")
+if MEDIA_DIR:
+    MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_DIR)
+    MEDIA_URL = f'{MEDIA_DIR}/'
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_URL = '/media/'
+
