@@ -1,3 +1,4 @@
+from chatbot.models import Bot
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
@@ -7,9 +8,10 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.http import require_http_methods
 
 # Create your views here.
-# @login_required(login_url='chatbot:home')
+@require_http_methods(["GET"])
 def home(request):
     if request.user.is_authenticated:
         user = request.user
@@ -26,6 +28,13 @@ def home(request):
     else:
         return render(request,'landing.html')
 
+@require_http_methods(["GET"])
+@login_required(login_url='chatbot:home')
+def create_chat(request):
+    sorted_bot_list = Bot.objects.order_by('title')
+    return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
+
+@require_http_methods(["GET","POST"])
 def login(request):
     if request.method == 'POST':
         user = auth.authenticate(username=request.POST['username'],password = request.POST['password'])
@@ -43,6 +52,7 @@ def logout(request):
         auth.logout(request)
     return HttpResponseRedirect(reverse("chatbot:login"))
 
+@require_http_methods(["GET","POST"])
 def register(request):
     if request.method == "POST":
         if request.POST['password'] == request.POST['password-confirm']:

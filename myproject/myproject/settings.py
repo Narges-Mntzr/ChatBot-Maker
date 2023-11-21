@@ -81,7 +81,6 @@ import time
 # Add a delay to allow PostgreSQL to start up
 time.sleep(20) 
 
-#todo: add envirenment variable
 DATABASES = {
     "default": {        
         "ENGINE": "django.db.backends.postgresql",
