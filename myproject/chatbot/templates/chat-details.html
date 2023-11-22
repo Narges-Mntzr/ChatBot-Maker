@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with User 1</title>
+    <title>Chat with {{chat.bot.title}}</title>
     <!-- Link to the Tailwind CSS stylesheet -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -39,10 +39,11 @@
                 {% endfor %} 
             </div>
             <!-- Message Input -->
-            <div class="message-input flex items-center">
-                <input type="text" placeholder="Type your message" class="flex-1 border rounded py-2 px-3 mr-2">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
-            </div>
+            <form class="message-input flex items-center" action="{% url 'chatbot:chat_detail' chat.id%}" method="POST">
+                {% csrf_token %}
+                <input type="text"  name="msg-text"  placeholder="Type your message" class="flex-1 border rounded py-2 px-3 mr-2">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
+            </form>
         </div>
     </div>
 </body>

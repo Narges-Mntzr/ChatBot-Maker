@@ -1,4 +1,4 @@
-from chatbot.models import Bot,Chat
+from chatbot.models import Bot, Chat, MessageRole
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
@@ -11,6 +11,33 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 # Create your views here.
+@require_http_methods(["GET", "POST"])
+@login_required(login_url='chatbot:home')
+def chat_detail(request, chat_id):
+    chat = get_object_or_404(Chat, pk=chat_id)
+
+    # add new msg
+    if request.method == 'POST':
+        chat.message_set.create(chat=chat,text=request.POST['msg-text'],
+            role=MessageRole.USER)
+        # todo: add bot response, change title
+    
+    sorted_msg_list = chat.message_set.order_by('pub_date')
+    return render(request, "chat-details.html", {"chat":chat, "sorted_msg_list":sorted_msg_list})
+
+@require_http_methods(["GET","POST"])
+@login_required(login_url='chatbot:home')
+def create_chat(request):
+    if request.method == 'GET':
+        sorted_bot_list = Bot.objects.order_by('title')
+        return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
+    else:
+        bot = get_object_or_404(Bot, pk=request.GET.get('bot', 1))
+        chat = Chat.objects.create(user=request.user,bot=bot)
+        chat.message_set.create(chat=chat,text="Hello! How can I assist you today? If you have any questions or need information, feel free to ask.",
+            role=MessageRole.BOT)
+        return HttpResponseRedirect(reverse("chatbot:chat_detail", args=(chat.pk,)))
+
 @require_http_methods(["GET"])
 def home(request):
     if request.user.is_authenticated:
@@ -27,26 +54,6 @@ def home(request):
         return render(request,'chat-list.html', {"chat_in_page":chat_in_page})
     else:
         return render(request,'landing.html')
-
-@require_http_methods(["GET","POST"])
-@login_required(login_url='chatbot:home')
-def create_chat(request):
-    if request.method == 'GET':
-        sorted_bot_list = Bot.objects.order_by('title')
-        return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
-    else:
-        bot = get_object_or_404(Bot, pk=request.GET.get('bot', 1))
-        chat = Chat.objects.create(user=request.user,bot=bot)
-        # todo: add first msg
-        return HttpResponseRedirect(reverse("chatbot:get_chat", args=(chat.pk,)))
-        # return HttpResponseRedirect(reverse("chatbot:home"))
-
-@require_http_methods(["GET"])
-@login_required(login_url='chatbot:home')
-def get_chat(request, chat_id):
-    chat = get_object_or_404(Chat, pk=chat_id)
-    sorted_msg_list = chat.message_set.order_by('pub_date')
-    return render(request, "chat-details.html", {"chat":chat, "sorted_msg_list":sorted_msg_list})
 
 @require_http_methods(["GET","POST"])
 def login(request):
