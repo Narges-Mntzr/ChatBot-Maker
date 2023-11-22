@@ -1,3 +1,6 @@
+variables:
+  OPENAI_API_KEY: ${OPENAI_API_KEY}
+
 stages:
   - "build"
   - "test"
@@ -12,7 +15,6 @@ build:
   stage: build
   image: docker:stable
   script:
-    - $ENV_FILE .env
     - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
     - docker build -t registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} .
     - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
