@@ -17,11 +17,15 @@ build:
     - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
 
 test:
+  services:
+    - postgres:latest
   tags:
     - bootcamp
     - fi
   variables:
     OPENAI_API_KEY: ${OPENAI_API_KEY}
+    DB_HOST: db
+    DB_PASS: postgre
   stage: test
   image: registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
   script:
