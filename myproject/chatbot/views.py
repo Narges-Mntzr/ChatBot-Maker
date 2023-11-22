@@ -87,9 +87,6 @@ def register(request):
             try:
                 validate_password(request.POST['password'])
                 user = User.objects.create_user(username=request.POST['username'],password=request.POST['password'])
-                if(request.POST['group']!='normal'):
-                    group = Group.objects.get(name=request.POST['group'])
-                    user.groups.add(group)
                 auth.login(request,user)
                 return HttpResponseRedirect(reverse("chatbot:home"))
             except IntegrityError as e:
