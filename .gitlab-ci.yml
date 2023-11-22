@@ -2,7 +2,7 @@
 variables:
   DOCKER_REGISTRY: registry.hamdocker.ir
   DOCKER_IMAGE: $DOCKER_REGISTRY/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
-  CONTAINER_NAME: "chatbot"
+  CONTAINER_NAME: "postgres"
 
 stages:
   - "build"
@@ -36,7 +36,7 @@ test:
   script:
     - docker pull $DOCKER_IMAGE
     - docker run --name $CONTAINER_NAME -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -d postgres:latest
-    - docker run --rm --link $CONTAINER_NAME -e $DOCKER_IMAGE python /app/myproject/manage.py test
+    - docker run -it --rm --link $CONTAINER_NAME -e $DOCKER_IMAGE python /app/myproject/manage.py test
   after_script:
     - docker stop $CONTAINER_NAME || true
     - docker rm $CONTAINER_NAME || true
