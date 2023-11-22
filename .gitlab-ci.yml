@@ -25,7 +25,7 @@ test:
   stage: test
   image: docker:stable
   script:
-    - docker compose -f /app/docker-compose.yml up -d
+    - docker-compose -f /app/docker-compose.yml up -d
     - docker exec -ti chatbot python /app/myproject/manage.py test
 
 deploy:
