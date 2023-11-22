@@ -1,4 +1,4 @@
-from chatbot.models import Bot
+from chatbot.models import Bot,Chat
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
@@ -28,11 +28,25 @@ def home(request):
     else:
         return render(request,'landing.html')
 
-@require_http_methods(["GET"])
+@require_http_methods(["GET","POST"])
 @login_required(login_url='chatbot:home')
 def create_chat(request):
-    sorted_bot_list = Bot.objects.order_by('title')
-    return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
+    if request.method == 'GET':
+        sorted_bot_list = Bot.objects.order_by('title')
+        return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
+    else:
+        bot = get_object_or_404(Bot, pk=request.GET.get('bot', 1))
+        chat = Chat.objects.create(user=request.user,bot=bot)
+        # todo: add first msg
+        return HttpResponseRedirect(reverse("chatbot:get_chat", args=(chat.pk,)))
+        # return HttpResponseRedirect(reverse("chatbot:home"))
+
+@require_http_methods(["GET"])
+@login_required(login_url='chatbot:home')
+def get_chat(request, chat_id):
+    chat = get_object_or_404(Chat, pk=chat_id)
+    sorted_msg_list = chat.message_set.order_by('pub_date')
+    return render(request, "chat-details.html", {"chat":chat, "sorted_msg_list":sorted_msg_list})
 
 @require_http_methods(["GET","POST"])
 def login(request):
@@ -58,7 +72,7 @@ def register(request):
         if request.POST['password'] == request.POST['password-confirm']:
             try:
                 validate_password(request.POST['password'])
-                user = User.objects.create_user(request.POST['username'],password=request.POST['password'])
+                user = User.objects.create_user(username=request.POST['username'],password=request.POST['password'])
                 if(request.POST['group']!='normal'):
                     group = Group.objects.get(name=request.POST['group'])
                     user.groups.add(group)

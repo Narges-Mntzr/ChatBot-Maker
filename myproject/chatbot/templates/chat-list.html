@@ -28,7 +28,7 @@
         {% for chat in chat_in_page %}
         <ul class="chat-list">
             <li class="chat-item border rounded p-2 mb-4 hover:bg-gray-100">
-                <a href="chat-details.html" class="chat-link flex items-center">
+                <a href="{% url 'chatbot:get_chat' chat.id%}" class="chat-link flex items-center">
                     <div class="chat-avatar mr-2" style="width:60px;height:60px;">
                         <img src="{{ chat.bot.img.url }}" alt="{{chat.title}}">
                     </div>

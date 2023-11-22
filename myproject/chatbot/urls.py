@@ -7,6 +7,7 @@ app_name = "chatbot"
 urlpatterns = [
     path('',views.home,name="home"),
     path('createChat/',views.create_chat,name="create_chat"),
+    path("chat/<int:chat_id>/", views.get_chat, name="get_chat"),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
     path('register/', views.register, name='register'),

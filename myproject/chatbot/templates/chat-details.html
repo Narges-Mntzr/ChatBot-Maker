@@ -11,7 +11,7 @@
     <!-- Header -->
     <header class="bg-gray-800 text-white p-4">
         <div class="container mx-auto">
-            <a href="chat-list.html" class="block text-2xl font-semibold text-white mb-4">
+            <a href="{% url 'chatbot:home'%}" class="block text-2xl font-semibold text-white mb-4">
                 Back to Chat History
             </a>
         </div>
@@ -19,17 +19,24 @@
     <!-- Chat Messages -->
     <div class="container mx-auto p-4 mt-4">
         <div class="chat-container bg-white rounded p-4 shadow-md">
+            <h1 class="text-2xl font-semibold mb-4">{{chat.title}}</h1>
             <div class="chat-messages">
-                <!-- Display chat messages here -->
-                <div class="message received flex items-center mb-2  border rounded p-2 mb-4 hover:bg-gray-100">
-                    <button class="btn-like">👍</button>
-                    <button class="btn-dislike">👎</button>
-                    <div class="message-content ml-2">Hello, how are you?</div>
-                </div>
-                <div class="message sent flex items-center justify-end  border rounded p-2 mb-4 hover:bg-gray-100">
-                    <div class="message-content">I'm good, thanks!</div>
-                </div>
-                <!-- Add more chat messages as needed -->
+                {% for msg in sorted_msg_list %}
+                    <!-- Display chat messages here -->
+                    {% if msg.role == 'bot' %}
+                        <div class="message received flex items-center mb-2  border rounded p-2 mb-4 hover:bg-gray-100">
+                            <button class="btn-like">👍</button>
+                            <button class="btn-dislike">👎</button>
+                            <div class="message-content ml-2">{{ msg.text }}</div>
+                        </div>
+                    {% endif %}
+                    {% if msg.role == 'user' %}
+                    <div class="message sent flex items-center justify-end  border rounded p-2 mb-4 hover:bg-gray-100">
+                        <div class="message-content">{{ msg.text }}</div>
+                    </div>
+                    {% endif %}
+                    <!-- Add more chat messages as needed -->
+                {% endfor %} 
             </div>
             <!-- Message Input -->
             <div class="message-input flex items-center">
