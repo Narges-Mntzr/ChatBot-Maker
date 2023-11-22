@@ -9,7 +9,7 @@ class Bot(models.Model):
     title = models.CharField(max_length=20, unique=True)
     detail = models.TextField(max_length=1000)
     img = models.ImageField(upload_to='chatbot/')
-    prompt = models.TextField(max_length=1000)
+    prompt = models.TextField(max_length=1000, default= "I'm a helpful assistant.")
     is_active = models.BooleanField(null=False, default=True)
 
     def __str__(self):
@@ -25,9 +25,13 @@ class BotContent(models.Model):
 class Chat(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50, default="New Chat")
+    title = models.CharField(max_length=30, default="New Chat")
+    preview = models.TextField(max_length=50, default="How can I assist you today?")
     create_date = models.DateTimeField(default=timezone.now)
     last_message_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.title}"
 
 class Reaction(models.TextChoices):
     LIKE = ('like', 'Like')
@@ -47,4 +51,3 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.text}"
-    

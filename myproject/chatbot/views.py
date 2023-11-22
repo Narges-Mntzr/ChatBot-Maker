@@ -1,3 +1,4 @@
+from chatbot.functions import openai_add_response, openai_change_preview_title
 from chatbot.models import Bot, Chat, MessageRole
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -18,9 +19,12 @@ def chat_detail(request, chat_id):
 
     # add new msg
     if request.method == 'POST':
-        chat.message_set.create(chat=chat,text=request.POST['msg-text'],
+        msg = chat.message_set.create(chat=chat,text=request.POST['msg-text'],
             role=MessageRole.USER)
-        # todo: add bot response, change title
+        
+        if(chat.title == "New Chat"):
+            openai_change_preview_title(chat, msg)
+        openai_add_response(chat, msg)
     
     sorted_msg_list = chat.message_set.order_by('pub_date')
     return render(request, "chat-details.html", {"chat":chat, "sorted_msg_list":sorted_msg_list})
