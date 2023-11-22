@@ -1,5 +1,5 @@
-from chatbot.functions import openai_add_response, openai_change_preview_title
-from chatbot.models import Bot, Chat, MessageRole
+from chatbot.functions import openai_add_response, openai_change_preview_title, openai_update_message
+from chatbot.models import Bot, Chat, Message, MessageReaction, MessageRole
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
@@ -19,12 +19,13 @@ def chat_detail(request, chat_id):
 
     # add new msg
     if request.method == 'POST':
+        previous_message = chat.message_set.order_by('-pub_date')[0]
         msg = chat.message_set.create(chat=chat,text=request.POST['msg-text'],
-            role=MessageRole.USER)
+            role=MessageRole.USER, previous_message=previous_message)
         
         if(chat.title == "New Chat"):
-            openai_change_preview_title(chat, msg)
-        openai_add_response(chat, msg)
+            openai_change_preview_title(msg)
+        openai_add_response(msg)
     
     sorted_msg_list = chat.message_set.order_by('pub_date')
     return render(request, "chat-details.html", {"chat":chat, "sorted_msg_list":sorted_msg_list})
@@ -38,8 +39,10 @@ def create_chat(request):
     else:
         bot = get_object_or_404(Bot, pk=request.GET.get('bot', 1))
         chat = Chat.objects.create(user=request.user,bot=bot)
-        chat.message_set.create(chat=chat,text="Hello! How can I assist you today? If you have any questions or need information, feel free to ask.",
+        msg = chat.message_set.create(chat=chat,text="Hello! How can I assist you today? If you have any questions or need information, feel free to ask.",
             role=MessageRole.BOT)
+        msg.previous_message = msg
+        msg.save()
         return HttpResponseRedirect(reverse("chatbot:chat_detail", args=(chat.pk,)))
 
 @require_http_methods(["GET"])
@@ -98,5 +101,18 @@ def register(request):
     else:
         return render(request,'register.html')
 
-
+@require_http_methods(["POST"])
+@login_required(login_url='chatbot:home')
+def msg_reaction(request, msg_id):
+    msg = get_object_or_404(Message, pk=msg_id)
+    reaction = request.POST['reaction']
+   
+    if(reaction == 'like'):
+        msg.reaction = MessageReaction.LIKE
+    elif(reaction == 'dislike'):
+        msg.reaction = MessageReaction.DISLIKE
+        if msg.role == MessageRole.BOT:
+            openai_update_message(msg) 
+    msg.save()
     
+    return HttpResponseRedirect(reverse("chatbot:chat_detail", args=(msg.chat.pk,)))
