@@ -17,10 +17,15 @@ services:
       MEDIA_DIR: /media
       DB_HOST: db
       DB_PASS: postgres
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     depends_on:
       - db
+    volumes: 
+      - chatbot_media:/media
     image: chatbot:latest
 
 volumes:
   postgres_data:
     name: postgres_data 
+  chatbot_media:
+    name: chatbot_media

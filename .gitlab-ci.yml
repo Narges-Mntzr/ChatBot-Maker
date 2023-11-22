@@ -12,6 +12,7 @@ build:
   stage: build
   image: docker:stable
   script:
+    - $ENV_FILE .env
     - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
     - docker build -t registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} .
     - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
@@ -19,6 +20,7 @@ build:
 test:
   services:
     - docker:dind
+  # todo: add posrgres , change image
   tags:
     - bootcamp
     - fi
@@ -26,7 +28,7 @@ test:
   image: docker:stable
   script:
     - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
-    - docker run registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} python app/myproject/manage.py test
+    - docker run registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} python /app/myproject/manage.py test
 
 deploy:
   tags:
