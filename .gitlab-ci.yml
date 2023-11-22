@@ -1,3 +1,7 @@
+variables:
+  DOCKER_REGISTRY: registry.hamdocker.ir
+  DOCKER_IMAGE: $DOCKER_REGISTRY/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
+
 stages:
   - "build"
   - "test"
@@ -13,8 +17,8 @@ build:
   image: docker:stable
   script:
     - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
-    - docker build -t registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} .
-    - docker push registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
+    - docker build -t ${DOCKER_IMAGE} .
+    - docker push ${DOCKER_IMAGE}
 
 test:
   services:
