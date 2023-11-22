@@ -33,22 +33,22 @@ class Chat(models.Model):
     def __str__(self):
         return f"{self.title}"
 
-class MessageReaction(models.TextChoices):
-    LIKE = ('like', 'Like')
-    DISLIKE = ('dislike', 'Dislike')
-    NONE = ('none', 'None')
-
-class MessageRole(models.TextChoices):
-    USER = ('user','User')
-    BOT = ('bot','Bot')
-
 class Message(models.Model):
+    class Reaction(models.TextChoices):
+        LIKE = ('like', 'Like')
+        DISLIKE = ('dislike', 'Dislike')
+        NONE = ('none', 'None')
+
+    class Role(models.TextChoices):
+        USER = ('user','User')
+        BOT = ('bot','Bot')
+
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     previous_message = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
     text = models.TextField(max_length=800)
     pub_date = models.DateTimeField(default=timezone.now)
-    role = models.CharField(max_length=20, choices=MessageRole.choices, null=False)
-    reaction = models.CharField(max_length=20, choices=MessageReaction.choices, default=MessageReaction.NONE)
+    role = models.CharField(max_length=20, choices=Role.choices, null=False)
+    reaction = models.CharField(max_length=20, choices=Reaction.choices, default=Reaction.NONE)
 
     def __str__(self):
         return f"{self.text}"

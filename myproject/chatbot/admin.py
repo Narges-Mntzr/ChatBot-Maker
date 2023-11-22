@@ -1,9 +1,21 @@
 from .models import Bot, BotContent, Chat, Message
 from django.contrib import admin
+from django.db.models import Count
+
+@admin.display(description="Like - Dislike")
+def like_number(obj):
+    reaction_counts = Message.objects.filter(chat__bot__user=obj.user).values('reaction').annotate(count=Count('reaction'))
+    
+    reactions={'like':0,'dislike':0}
+    for r in reactions:
+        tmpList = [rc['count'] for rc in reaction_counts if rc['reaction'] == r]
+        reactions[r] = tmpList[0] if len(tmpList)>0 else 0
+
+    return f"{reactions['like']} - {reactions['dislike']}"
 
 # Register your models here.
-
 class BotAdmin(admin.ModelAdmin):
+    list_display = ["title", like_number]
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

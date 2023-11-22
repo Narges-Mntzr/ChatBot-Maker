@@ -1,8 +1,8 @@
 from chatbot.functions import openai_add_response, openai_change_preview_title, openai_update_message
-from chatbot.models import Bot, Chat, Message, MessageReaction, MessageRole
+from chatbot.models import Bot, Chat, Message
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import IntegrityError
@@ -21,7 +21,7 @@ def chat_detail(request, chat_id):
     if request.method == 'POST':
         previous_message = chat.message_set.order_by('-pub_date')[0]
         msg = chat.message_set.create(chat=chat,text=request.POST['msg-text'],
-            role=MessageRole.USER, previous_message=previous_message)
+            role=Message.Role.USER, previous_message=previous_message)
         
         if(chat.title == "New Chat"):
             openai_change_preview_title(msg)
@@ -40,7 +40,7 @@ def create_chat(request):
         bot = get_object_or_404(Bot, pk=request.GET.get('bot', 1))
         chat = Chat.objects.create(user=request.user,bot=bot)
         msg = chat.message_set.create(chat=chat,text="Hello! How can I assist you today? If you have any questions or need information, feel free to ask.",
-            role=MessageRole.BOT)
+            role=Message.Role.BOT)
         msg.previous_message = msg
         msg.save()
         return HttpResponseRedirect(reverse("chatbot:chat_detail", args=(chat.pk,)))
@@ -105,10 +105,10 @@ def msg_reaction(request, msg_id):
     reaction = request.POST['reaction']
    
     if(reaction == 'like'):
-        msg.reaction = MessageReaction.LIKE
+        msg.reaction = Message.Reaction.LIKE
     elif(reaction == 'dislike'):
-        msg.reaction = MessageReaction.DISLIKE
-        if msg.role == MessageRole.BOT:
+        msg.reaction = Message.Reaction.DISLIKE
+        if msg.role == Message.Role.BOT:
             openai_update_message(msg) 
     msg.save()
     
