@@ -1,6 +1,7 @@
 variables:
   DOCKER_REGISTRY: registry.hamdocker.ir
   DOCKER_IMAGE: $DOCKER_REGISTRY/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
+  OPENAI_API_KEY: ${OPENAI_API_KEY}
 
 stages:
   - "build"

@@ -17,8 +17,7 @@ services:
       MEDIA_DIR: /media
       DB_HOST: db
       DB_PASS: postgres
-      # todo: remove it
-      OPENAI_API_KEY: aThe1kygMkF3uncybaXxBh8disxq9yvi
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     depends_on:
       - db
     volumes: 
