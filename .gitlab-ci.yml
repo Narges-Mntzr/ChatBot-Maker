@@ -24,11 +24,12 @@ test:
     - fi
   variables:
     OPENAI_API_KEY: ${OPENAI_API_KEY}
-    DB_HOST: db
-    DB_PASS: postgre
+    DB_HOST: postgre
+    DB_PASS: ''
   stage: test
   image: registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
   script:
+    - export DATABASE_URL=postgres://postgres:@postgres:5432/postgre
     - python /app/myproject/manage.py migrate
     - python /app/myproject/manage.py test
   
