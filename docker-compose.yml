@@ -23,7 +23,7 @@ services:
       - db
     volumes: 
       - chatbot_media:/media
-    image: chatbot:latest
+    image: ${DOCKER_IMAGE}
 
 volumes:
   postgres_data:
