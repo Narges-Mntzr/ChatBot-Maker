@@ -27,6 +27,4 @@ services:
 
 volumes:
   postgres_data:
-    name: postgres_data 
   chatbot_media:
-    name: chatbot_media
