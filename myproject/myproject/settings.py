@@ -144,4 +144,4 @@ else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     MEDIA_URL = '/media/'
 
-OPENAI_API_KEY =  os.environ.get("MEDIA_DIR")
+OPENAI_API_KEY =  os.environ.get("OPENAI_API_KEY")
