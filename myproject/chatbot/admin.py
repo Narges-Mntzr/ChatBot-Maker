@@ -1,10 +1,10 @@
 from .models import Bot, BotContent, Chat, Message
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, Q
 
 @admin.display(description="Like - Dislike")
 def like_number(obj):
-    reaction_counts = Message.objects.filter(chat__bot__user=obj.user).values('reaction').annotate(count=Count('reaction'))
+    reaction_counts = Message.objects.filter(chat__bot=obj).values('reaction').annotate(count=Count('reaction'))
     
     reactions={'like':0,'dislike':0}
     for r in reactions:
