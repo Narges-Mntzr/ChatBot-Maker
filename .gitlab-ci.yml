@@ -18,16 +18,18 @@ build:
 
 test:
   services:
-    - docker:dind
+    - registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA}
   # todo: add posrgres , change image
   tags:
     - bootcamp
     - fi
   stage: test
   image: docker:stable
+  variables:
+    OPENAI_API_KEY: ${OPENAI_API_KEY}
   script:
-    - mkdir -p ~/.docker && cat "$DOCKER_AUTH_CONFIG" > ~/.docker/config.json
-    - docker run registry.hamdocker.ir/torob-bootcamp-1402/narges-montazeri-chatbot:${CI_COMMIT_SHORT_SHA} python /app/myproject/manage.py test
+    - python /app/myproject/manage.py migrate
+    - python /app/myproject/manage.py test
 
 deploy:
   tags:
