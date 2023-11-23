@@ -1,4 +1,6 @@
 import os
+import logging
+
 
 """
 Django settings for myproject project.
@@ -145,3 +147,14 @@ else:
     MEDIA_URL = '/media/'
 
 OPENAI_API_KEY =  os.environ.get("OPENAI_API_KEY")
+OPENAI_BASE_URL = 'https://openai.torob.ir/v1'
+
+# Define the log file path
+LOG_FILE = os.path.join(BASE_DIR, 'django.log')
+
+# Configure logging
+logging.basicConfig(
+    filename=LOG_FILE,
+    level=logging.DEBUG,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+)
