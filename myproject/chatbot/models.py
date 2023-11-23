@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from pgvector.django import VectorField
 
 
 # Create your models here.
@@ -18,6 +19,7 @@ class Bot(models.Model):
 class BotContent(models.Model):
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
     text = models.TextField(max_length=800)
+    embedding = VectorField(dimensions=1536,null=True)
 
     def __str__(self):
         return f"{self.text}"
@@ -49,6 +51,12 @@ class Message(models.Model):
     pub_date = models.DateTimeField(default=timezone.now)
     role = models.CharField(max_length=20, choices=Role.choices, null=False)
     reaction = models.CharField(max_length=20, choices=Reaction.choices, default=Reaction.NONE)
+    related_botcontent = models.ForeignKey(BotContent, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.text}"
+    def msg_with_relatedcontent(self):
+        if(not self.related_botcontent):
+            return self.text
+        #todo: prompt engineering
+        return f"{self.related_botcontent.text}\n{self.text}"

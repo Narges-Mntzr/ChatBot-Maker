@@ -1,3 +1,4 @@
+from .functions import openai_get_embedding
 from .models import Bot, BotContent, Chat, Message
 from django.contrib import admin
 from django.db.models import Count, Q
@@ -35,7 +36,7 @@ class BotAdmin(admin.ModelAdmin):
         return qs
     
     def save_model(self, request, obj, form, change):
-        # If the user is in the 'maker' group, set the user field to the current user
+        # If the user is in the 'chatbotMaker' group, set the user field to the current user
         if request.user.groups.filter(name='chatbotMaker').exists():
             obj.user = request.user
         obj.save()
@@ -48,12 +49,22 @@ class BotContentAdmin(admin.ModelAdmin):
             kwargs['queryset'] = db_field.related_model.objects.filter(user=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        form.base_fields['embedding'].widget.attrs['disabled'] = True
+        form.base_fields['embedding'].required = False
+        return form
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        # If the user is in the 'maker' group, filter by user
+        # If the user is in the 'chatbotMaker' group, filter by user
         if request.user.groups.filter(name='chatbotMaker').exists():
             return qs.filter(bot__user=request.user)
         return qs
+    
+    def save_model(self, request, obj, form, change):
+        obj.embedding = openai_get_embedding(obj.text)
+        obj.save()
 
 admin.site.register(Bot, BotAdmin)
 admin.site.register(BotContent, BotContentAdmin)
