@@ -1,51 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with {{chat.bot.title}}</title>
-    <!-- Link to the Tailwind CSS stylesheet -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-gray-800 text-white p-4">
-        <div class="container mx-auto">
-            <a href="{% url 'chatbot:home'%}" class="block text-2xl font-semibold text-white mb-4">
-                Back to Chat History
-            </a>
+{% extends "base.html" %}
+
+{% block title %}Chat with {{chat.bot.title}}{% endblock %}
+
+{% block content %}
+    <div class="chat-container bg-white rounded p-4 shadow-md">
+        <h1 class="text-2xl font-semibold mb-4">{{chat.title}}</h1>
+        <div class="chat-messages">
+            {% for msg in sorted_msg_list %}
+                <!-- Display chat messages here -->
+                {% if msg.role == 'bot' %}
+                    <form class="message received flex items-center mb-2  border rounded p-2 mb-4 hover:bg-gray-100" action="{% url 'chatbot:msg_reaction' msg.id%}" method="POST">
+                        {% csrf_token %}
+                        <button name="reaction" value="like" class="btn-like">{% if msg.reaction == 'like' %}👍🏾{% elif msg.reaction == 'none' %}👍{% endif %}</button>
+                        <button name="reaction" value="dislike" class="btn-dislike text-green">{% if msg.reaction == 'dislike' %}👎🏾{% elif msg.reaction == 'none' %}👎{% endif %}</button>
+                        <div class="message-content ml-2">{{ msg.text }}</div>
+                    </form>
+                {% endif %}
+                {% if msg.role == 'user' %}
+                <div class="message sent flex items-center justify-end  border rounded p-2 mb-4 hover:bg-gray-100">
+                    <div class="message-content">{{ msg.text }}</div>
+                </div>
+                {% endif %}
+                <!-- Add more chat messages as needed -->
+            {% endfor %} 
         </div>
-    </header>
-    <!-- Chat Messages -->
-    <div class="container mx-auto p-4 mt-4">
-        <div class="chat-container bg-white rounded p-4 shadow-md">
-            <h1 class="text-2xl font-semibold mb-4">{{chat.title}}</h1>
-            <div class="chat-messages">
-                {% for msg in sorted_msg_list %}
-                    <!-- Display chat messages here -->
-                    {% if msg.role == 'bot' %}
-                        <form class="message received flex items-center mb-2  border rounded p-2 mb-4 hover:bg-gray-100" action="{% url 'chatbot:msg_reaction' msg.id%}" method="POST">
-                            {% csrf_token %}
-                            <button name="reaction" value="like" class="btn-like">{% if msg.reaction == 'like' %}👍🏾{% elif msg.reaction == 'none' %}👍{% endif %}</button>
-                            <button name="reaction" value="dislike" class="btn-dislike text-green">{% if msg.reaction == 'dislike' %}👎🏾{% elif msg.reaction == 'none' %}👎{% endif %}</button>
-                            <div class="message-content ml-2">{{ msg.text }}</div>
-                        </form>
-                    {% endif %}
-                    {% if msg.role == 'user' %}
-                    <div class="message sent flex items-center justify-end  border rounded p-2 mb-4 hover:bg-gray-100">
-                        <div class="message-content">{{ msg.text }}</div>
-                    </div>
-                    {% endif %}
-                    <!-- Add more chat messages as needed -->
-                {% endfor %} 
-            </div>
-            <!-- Message Input -->
-            <form class="message-input flex items-center" action="{% url 'chatbot:chat_detail' chat.id%}" method="POST">
-                {% csrf_token %}
-                <input type="text"  name="msg-text"  placeholder="Type your message" class="flex-1 border rounded py-2 px-3 mr-2">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
-            </form>
-        </div>
+        <!-- Message Input -->
+        <form class="message-input flex items-center" action="{% url 'chatbot:chat_detail' chat.id%}" method="POST">
+            {% csrf_token %}
+            <input type="text"  name="msg-text"  placeholder="Type your message" class="flex-1 border rounded py-2 px-3 mr-2">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
+        </form>
     </div>
-</body>
-</html>
+{% endblock %}

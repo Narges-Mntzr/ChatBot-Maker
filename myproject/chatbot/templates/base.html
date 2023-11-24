@@ -1,0 +1,34 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ChatBot Maker{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="{% static 'favIcon.ico' %}" >
+</head>
+
+{% block body %}
+<body class="bg-gray-100">
+    <header class="bg-gray-800 text-white p-4">
+        {% block bodyHeader %}
+        <div class="container mx-auto">
+            <a href="{% url 'chatbot:home'%}" class="block text-2xl font-semibold text-white mb-4">
+                Back to Chat History
+            </a>
+        </div>
+        {% endblock %}
+    </header>
+
+    <div id="content" class="container mx-auto p-4 mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        {% block bodyFooter %}{% endblock %}
+    </footer>
+</body>
+{% endblock %}
+</html>

@@ -1,75 +1,69 @@
-{% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat History</title>
-    <!-- Link to the Tailwind CSS stylesheet -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
+{% extends "base.html" %}
+
+{% block title %}Chat History{% endblock %}
+
+{% block bodyHeader %}
     <header class="bg-gray-800 text-white p-4">
         <div class="container mx-auto">
             <h1 class="text-2xl font-semibold">Chat History</h1>
         </div>
     </header>
-    <!-- Chat List -->
-    <div class="container mx-auto p-4 mt-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold">Your Chats</h2>
-            <form class="search-box" action="{% url 'chatbot:home'%}" method="GET">
-                <input type="text" placeholder="Search chats" name = "searchChat" class="p-2 border rounded">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Search</button>
-            </form>
-        </div>
-        <!-- List of Previous Chats -->
-        {% for chat in chat_in_page %}
-        <ul class="chat-list">
-            <li class="chat-item border rounded p-2 mb-4 hover:bg-gray-100">
-                <a href="{% url 'chatbot:chat_detail' chat.id%}" class="chat-link flex items-center">
-                    <div class="chat-avatar mr-2" style="width:60px;height:60px;">
-                        <img src="{{ chat.bot.img.url }}" alt="{{chat.title}}">
-                    </div>
-                    <div class="chat-details">
-                        <h3 class="chat-title">{{ chat.title }}</h3>
-                        <p class="chat-preview">{{ chat.preview }}</p>
-                        <p class="chat-date">{{chat.last_message_date}} </p>
-                    </div>
-                </a>
-            </li>
-            <!-- Add more chat items here with the same added styles -->
-        </ul>
-        {% endfor %}
-        <!-- Pagination -->
-        {% if chat_in_page.has_other_pages %}
-        <ul class="pagination flex space-x-2">
-            {% if chat_in_page.has_previous %}
-            <li><a href="?page={{ chat_in_page.previous_page_number }} & searchChat={{ searchChat }}">&laquo;</a></li>
-            {% else %}
-            <li class="disabled"><span>&laquo;</span></li>
-            {% endif %}
-            {% for i in chat_in_page.paginator.page_range %}
-            {% if chat_in_page.number == i %}
-                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-            {% else %}
-                <li><a href="?page={{ i }}&searchChat={{ searchChat }}">{{ i }}</a></li>
-            {% endif %}
-            {% endfor %}
-            {% if chat_in_page.has_next %}
-            <li><a href="?page={{ chat_in_page.next_page_number }}&searchChat={{ searchChat }}">&raquo;</a></li>
-            {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-            {% endif %}
-        </ul>
-        {% endif %}
-    </div>
-    <footer>
-        <div class="container mx-auto">
-            <a href="{% url 'chatbot:create_chat'%}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Create New Chat</a>
-        </div>
-    </footer>
-</body>
-</html>
+{% endblock %}
 
+{% block content %}
+    <!-- Chat List -->
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Your Chats</h2>
+        <form class="search-box" action="{% url 'chatbot:home'%}" method="GET">
+            <input type="text" placeholder="Search chats" name = "searchChat" class="p-2 border rounded">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Search</button>
+        </form>
+    </div>
+    <!-- List of Previous Chats -->
+    {% for chat in chat_in_page %}
+    <ul class="chat-list">
+        <li class="chat-item border rounded p-2 mb-4 hover:bg-gray-100">
+            <a href="{% url 'chatbot:chat_detail' chat.id%}" class="chat-link flex items-center">
+                <div class="chat-avatar mr-2" style="width:60px;height:60px;">
+                    <img src="{{ chat.bot.img.url }}" alt="{{chat.title}}">
+                </div>
+                <div class="chat-details">
+                    <h3 class="chat-title">{{ chat.title }}</h3>
+                    <p class="chat-preview">{{ chat.preview }}</p>
+                    <p class="chat-date">{{chat.last_message_date}} </p>
+                </div>
+            </a>
+        </li>
+        <!-- Add more chat items here with the same added styles -->
+    </ul>
+    {% endfor %}
+    <!-- Pagination -->
+    {% if chat_in_page.has_other_pages %}
+    <ul class="pagination flex space-x-2">
+        {% if chat_in_page.has_previous %}
+        <li><a href="?page={{ chat_in_page.previous_page_number }} & searchChat={{ searchChat }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in chat_in_page.paginator.page_range %}
+        {% if chat_in_page.number == i %}
+            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+            <li><a href="?page={{ i }}&searchChat={{ searchChat }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if chat_in_page.has_next %}
+        <li><a href="?page={{ chat_in_page.next_page_number }}&searchChat={{ searchChat }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+{% endblock %}
+
+{% block bodyFooter %}
+    <div class="container mx-auto">
+        <a href="{% url 'chatbot:create_chat'%}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Create New Chat</a>
+    </div>
+{% endblock %}
