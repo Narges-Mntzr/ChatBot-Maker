@@ -28,7 +28,7 @@
         <form class="message-input flex items-center" action="{% url 'chatbot:chat_detail' chat.id%}" method="POST">
             {% csrf_token %}
             <input type="text"  name="msg-text"  placeholder="Type your message" class="flex-1 border rounded py-2 px-3 mr-2">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
+            <button type="submit" {% if not chat.bot.is_active %}disabled style = "background-color: #aac9dc;border: none;"{% endif %} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
         </form>
     </div>
 {% endblock %}

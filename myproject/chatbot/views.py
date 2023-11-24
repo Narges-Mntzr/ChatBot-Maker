@@ -21,12 +21,13 @@ def chat_detail(request, chat_id):
     # add new msg
     if request.method == 'POST':
         previous_message = chat.message_set.order_by('-pub_date')[0]
-        msg = chat.message_set.create(chat=chat,text=request.POST['msg-text'],
-            role=Message.Role.USER, previous_message=previous_message)
-        
-        if(chat.title == "New Chat"):
-            openai_change_preview_title(msg)
-        openai_add_response(msg)
+        if previous_message.role == Message.Role.BOT:
+            msg = chat.message_set.create(chat=chat,text=request.POST['msg-text'],
+                role=Message.Role.USER, previous_message=previous_message)
+            
+            if(chat.title == "New Chat"):
+                openai_change_preview_title(msg)
+            openai_add_response(msg)
     
     sorted_msg_list = chat.message_set.order_by('pub_date')
     return render(request, "chat-details.html", {"chat":chat, "sorted_msg_list":sorted_msg_list})
@@ -38,7 +39,7 @@ def create_chat(request):
         sorted_bot_list = Bot.objects.order_by('title')
         return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
     else:
-        bot = get_object_or_404(Bot, pk=request.GET.get('bot', 1))
+        bot = get_object_or_404(Bot, pk=request.POST.get('bot', 1))
         chat = Chat.objects.create(user=request.user,bot=bot)
         msg = chat.message_set.create(chat=chat,text="Hello! How can I assist you today? If you have any questions or need information, feel free to ask.",
             role=Message.Role.BOT)
@@ -81,14 +82,13 @@ def login(request):
             auth.login(request,user)
             return HttpResponseRedirect(reverse("chatbot:home"))
         else:
-            return render (request,'login.html', {'error_message':'Username or password is incorrect!'})
+            return render (request,'login.html', {'error_message':'Username or password is incorrect!'}, status=400)
     else:
         return render(request,'login.html')
 
+@require_http_methods(["GET"])
 def logout(request):
-    #todo: GET or POST
-    if request.method == 'GET':
-        auth.logout(request)
+    auth.logout(request)
     return HttpResponseRedirect(reverse("chatbot:login"))
 
 @require_http_methods(["POST"])
@@ -117,10 +117,10 @@ def register(request):
                 auth.login(request,user)
                 return HttpResponseRedirect(reverse("chatbot:home"))
             except IntegrityError as e:
-                return render (request,'register.html', {'error_message':'email is already taken!'})
+                return render (request,'register.html', {'error_message':'Email is already taken!'}, status=400)
             except Exception as e:
                  return render(request,'register.html',{'error_message':e.error_list[0]})
         else:
-            return render (request,'register.html', {'error_message':'Password does not match!'})
+            return render (request,'register.html', {'error_message':'Password does not match!'}, status=400)
     else:
         return render(request,'register.html')
