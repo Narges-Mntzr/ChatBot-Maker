@@ -4,6 +4,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
@@ -49,7 +50,17 @@ def create_chat(request):
 def home(request):
     if request.user.is_authenticated:
         user = request.user
-        sorted_chat_list = user.chat_set.order_by('-last_message_date')
+        query = ""
+        if request.GET.get("searchChat"):
+            #searching
+            query = request.GET.get("searchChat")
+            search_vector = SearchVector("title", "message__text")
+            search_query = SearchQuery(query)
+            sorted_chat_list = user.chat_set.annotate( search=search_vector, 
+                                        rank= SearchRank(search_vector, search_query)
+                                        ).filter(search=search_query).order_by("-id").distinct('id')
+        else:
+            sorted_chat_list = user.chat_set.order_by('-last_message_date')
         page = request.GET.get('page', 1)
         paginator = Paginator(sorted_chat_list, 5)
         try:
@@ -58,7 +69,7 @@ def home(request):
             chat_in_page = paginator.page(1)
         except EmptyPage:
             chat_in_page = paginator.page(paginator.num_pages)
-        return render(request,'chat-list.html', {"chat_in_page":chat_in_page})
+        return render(request,'chat-list.html', {"chat_in_page":chat_in_page,"searchChat":query})
     else:
         return render(request,'landing.html')
 
@@ -80,6 +91,22 @@ def logout(request):
         auth.logout(request)
     return HttpResponseRedirect(reverse("chatbot:login"))
 
+@require_http_methods(["POST"])
+@login_required(login_url='chatbot:home')
+def msg_reaction(request, msg_id):
+    msg = get_object_or_404(Message, pk=msg_id)
+    reaction = request.POST['reaction']
+
+    if(reaction == 'like'):
+        msg.reaction = Message.Reaction.LIKE
+    elif(reaction == 'dislike'):
+        msg.reaction = Message.Reaction.DISLIKE
+        if msg.role == Message.Role.BOT:
+            openai_update_message(msg) 
+    msg.save()
+    
+    return HttpResponseRedirect(reverse("chatbot:chat_detail", args=(msg.chat.pk,)))
+
 @require_http_methods(["GET","POST"])
 def register(request):
     if request.method == "POST":
@@ -97,19 +124,3 @@ def register(request):
             return render (request,'register.html', {'error_message':'Password does not match!'})
     else:
         return render(request,'register.html')
-
-@require_http_methods(["POST"])
-@login_required(login_url='chatbot:home')
-def msg_reaction(request, msg_id):
-    msg = get_object_or_404(Message, pk=msg_id)
-    reaction = request.POST['reaction']
-   
-    if(reaction == 'like'):
-        msg.reaction = Message.Reaction.LIKE
-    elif(reaction == 'dislike'):
-        msg.reaction = Message.Reaction.DISLIKE
-        if msg.role == Message.Role.BOT:
-            openai_update_message(msg) 
-    msg.save()
-    
-    return HttpResponseRedirect(reverse("chatbot:chat_detail", args=(msg.chat.pk,)))

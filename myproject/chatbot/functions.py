@@ -13,7 +13,6 @@ def similar_content(msg):
         return None
     return output[0]
         
-
 def openai_add_response(msg):
     #todo: can be better
     msg.related_botcontent = similar_content(msg)
@@ -34,7 +33,7 @@ def openai_add_response(msg):
             role=Message.Role.BOT,previous_message=msg)
 
 def openai_change_preview_title(msg):
-    titlePrompt = f'''Come up with a creative title for a conversation starter using this message
+    titlePrompt = f'''Choose a title for a conversation starter using this message
       with a maximum of 3 words.\n{msg.text}'''
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
