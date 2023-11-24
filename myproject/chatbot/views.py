@@ -36,10 +36,14 @@ def chat_detail(request, chat_id):
 @login_required(login_url='chatbot:home')
 def create_chat(request):
     if request.method == 'GET':
-        sorted_bot_list = Bot.objects.order_by('title')
+        sorted_bot_list = Bot.objects.filter(is_active=True).order_by('title')
         return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
     else:
         bot = get_object_or_404(Bot, pk=request.POST.get('bot', 1))
+        if not bot.is_active:
+            sorted_bot_list = Bot.objects.filter(is_active=True).order_by('title')
+            return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
+        
         chat = Chat.objects.create(user=request.user,bot=bot)
         msg = chat.message_set.create(chat=chat,text="Hello! How can I assist you today? If you have any questions or need information, feel free to ask.",
             role=Message.Role.BOT)
