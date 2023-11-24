@@ -16,7 +16,9 @@ def like_number(obj):
 
 # Register your models here.
 class BotAdmin(admin.ModelAdmin):
-    list_display = ["title", like_number]
+
+    list_display = ('id','user','title','is_active',like_number)
+    search_fields = ['user__username','title']
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -42,6 +44,9 @@ class BotAdmin(admin.ModelAdmin):
         obj.save()
 
 class BotContentAdmin(admin.ModelAdmin):
+    
+    list_display = ('id','bot')
+    search_fields = ['bot__title']
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'bot' and request.user.groups.filter(name='chatbotMaker').exists():
@@ -63,10 +68,14 @@ class BotContentAdmin(admin.ModelAdmin):
         return qs
     
     def save_model(self, request, obj, form, change):
-        obj.embedding = openai_get_embedding(obj.text)
+        obj.embedding = openai_get_embedding(obj)
         obj.save()
+
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ('id','user','title','bot','title')
+    search_fields = ['user__username','title','message__text']
 
 admin.site.register(Bot, BotAdmin)
 admin.site.register(BotContent, BotContentAdmin)
-admin.site.register(Chat)
+admin.site.register(Chat, ChatAdmin)
 admin.site.register(Message)
