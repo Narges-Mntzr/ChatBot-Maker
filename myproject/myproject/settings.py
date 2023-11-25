@@ -78,11 +78,6 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#todo: removo it on production
-import time
-# Add a delay to allow PostgreSQL to start up
-time.sleep(20) 
-
 DATABASES = {
     "default": {        
         "ENGINE": "django.db.backends.postgresql",

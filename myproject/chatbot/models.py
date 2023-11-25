@@ -10,7 +10,7 @@ class Bot(models.Model):
     title = models.CharField(max_length=20, unique=True)
     detail = models.TextField(max_length=1000)
     img = models.ImageField(upload_to='chatbot/')
-    prompt = models.TextField(max_length=1000, default= "I'm a helpful assistant.")
+    prompt = models.TextField(max_length=1000, default= "I'm a helpful assistant who helps users alot.")
     is_active = models.BooleanField(null=False, default=True)
 
     def __str__(self):
@@ -55,8 +55,20 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.text}"
-    def msg_with_relatedcontent(self):
+    
+    def get_prompt(self):
         if(not self.related_botcontent):
-            return self.text
-        #todo: prompt engineering
-        return f"{self.related_botcontent.text}\n{self.text}"
+            return (
+                f'''
+                Check your answer several times and give acceptable answer to the following question.
+                Question: {self.text}
+                '''
+            )
+        
+        return (
+        f''' 
+        "{self.related_botcontent.text}"
+        Based on the above document and your own information, Check your answer several times and give acceptable answer to the following question.
+        Question: {self.text}
+        '''
+        )

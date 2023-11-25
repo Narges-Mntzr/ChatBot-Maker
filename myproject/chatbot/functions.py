@@ -15,15 +15,14 @@ def similar_content(msg):
         
 def openai_add_response(msg):
     if not msg.related_botcontent:
-        #todo: can be better
         msg.related_botcontent = similar_content(msg)
         msg.save()
     messages = [{"role":"system", "content":msg.chat.bot.prompt}] 
     # msg isn't first msg in chat
     if msg.previous_message != msg.previous_message.previous_message:
-        messages.append({"role":"user", "content":msg.previous_message.previous_message.msg_with_relatedcontent()})
+        messages.append({"role":"user", "content":msg.previous_message.previous_message.get_prompt()})
         messages.append({"role":"assistant", "content":str(msg.previous_message)})
-    messages.append({"role":"user", "content":msg.msg_with_relatedcontent()})
+    messages.append({"role":"user", "content":msg.get_prompt()})
     
     try:
         response = client.chat.completions.create(
@@ -64,13 +63,19 @@ def openai_get_embedding(msg):
 
 def openai_update_message(msg):
     try:
+        messages = [{"role":"system", "content":msg.chat.bot.prompt}] 
+        # msg isn't first msg in chat
+        completePreMsg = msg.previous_message.get_prompt()
+        messages.append({"role":"user", "content":completePreMsg})
+        messages.append({"role":"assistant", "content":str(msg)})
+        
+        completePreMsgV2 = f''' I have asked you this question once again, but your answer was not appropriate. Be more careful and give me a better answer.
+            {completePreMsg}
+        '''
+        messages.append({"role":"user", "content":completePreMsgV2})
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            # todo: add more msg and say i am not ok
-            messages=[
-                {"role":"system", "content":msg.chat.bot.prompt},
-                {"role":"user", "content":msg.previous_message.text}
-            ],
+            messages=messages,
         )
         msg.chat.message_set.create(chat=msg.chat,text=response.choices[0].message.content,
                 role=Message.Role.BOT,previous_message=msg.previous_message,

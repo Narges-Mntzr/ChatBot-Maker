@@ -18,7 +18,7 @@ class OpenAiFunctionTests(TestCase):
         contents = json.load(open(f'{settings.BASE_DIR}/chatbot/data/data.json'))
         random.shuffle(contents['similar_data'])
         answers, trueAnswers = 0, 0
-        testSize = 50
+        testSize = 100
 
         for i in range(testSize):
             d = contents['similar_data'][i]
