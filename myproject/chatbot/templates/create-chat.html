@@ -7,10 +7,11 @@
     {% for bot in sorted_bot_list %}
         <ul class="contact-list">
             <li class="contact-item border rounded p-2 mb-2 hover:bg-gray-100">
-                <form  action="{% url 'chatbot:create_chat'%}?bot={{ bot.id }}" method="POST">
+                <form  action="{% url 'chatbot:create_chat'%}" method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="contact-link cursor-pointer flex items-center">
-                        <div class="contact-avatar" style="width:60px;height:60px;">
+                    <input type="text" name="bot" value="{{ bot.id }}" style="display:none;">
+                    <button type="submit" class="contact-link flex items-center text-left">
+                        <div class="contact-avatar mr-4" style="width:60px;height:60px;">
                             <img src="{{ bot.img.url }}" alt="{{bot.title}}">
                         </div>
                         <div class="contact-details">

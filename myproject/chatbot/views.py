@@ -39,7 +39,7 @@ def create_chat(request):
         sorted_bot_list = Bot.objects.filter(is_active=True).order_by('title')
         return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
     else:
-        bot = get_object_or_404(Bot, pk=request.POST.get('bot', 1))
+        bot = get_object_or_404(Bot, pk=request.POST['bot'])
         if not bot.is_active:
             sorted_bot_list = Bot.objects.filter(is_active=True).order_by('title')
             return render(request,'create-chat.html', {"sorted_bot_list":sorted_bot_list})
