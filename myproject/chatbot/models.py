@@ -68,7 +68,7 @@ class Message(models.Model):
         return (
         f''' 
         "{self.related_botcontent.text}"
-        Based on the above document and your own information, Check your answer several times and give acceptable answer to the following question.
+        Check your answer several times and give acceptable answer to the following question, The document above may help you, 
         Question: {self.text}
         '''
         )
