@@ -1,5 +1,5 @@
-from .functions import openai_get_embedding
 from .models import Bot, BotContent, Chat, Message
+from .services import openai_get_embedding
 from django.contrib import admin
 from django.db.models import Count, Q
 
@@ -8,9 +8,8 @@ def like_number(obj):
     reaction_counts = Message.objects.filter(chat__bot=obj).values('reaction').annotate(count=Count('reaction'))
     
     reactions={'like':0,'dislike':0}
-    for r in reactions:
-        tmpList = [rc['count'] for rc in reaction_counts if rc['reaction'] == r]
-        reactions[r] = tmpList[0] if len(tmpList)>0 else 0
+    for rc in reaction_counts:
+        reactions[rc['reaction']] = rc['count']
 
     return f"{reactions['like']} - {reactions['dislike']}"
 
@@ -41,6 +40,9 @@ class BotAdmin(admin.ModelAdmin):
         # If the user is in the 'chatbotMaker' group, set the user field to the current user
         if request.user.groups.filter(name='chatbotMaker').exists():
             obj.user = request.user
+        promptSuffix = "If you don't know the right answer, don't answer it."
+        if( not obj.prompt.endswith(promptSuffix) ):
+            obj.prompt = f'{obj.prompt}\n {promptSuffix}' 
         obj.save()
 
 class BotContentAdmin(admin.ModelAdmin):

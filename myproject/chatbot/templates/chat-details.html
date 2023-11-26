@@ -13,7 +13,7 @@
                         {% csrf_token %}
                         <button name="reaction" value="like" class="btn-like">{% if msg.reaction == 'like' %}👍🏾{% elif msg.reaction == 'none' %}👍{% endif %}</button>
                         <button name="reaction" value="dislike" class="btn-dislike text-green">{% if msg.reaction == 'dislike' %}👎🏾{% elif msg.reaction == 'none' %}👎{% endif %}</button>
-                        <div class="message-content ml-2">{{ msg.text }}</div>
+                        <div class="message-content ml-2" {% if msg.reaction == 'dislike' %}style="color: #bababa"{% endif %}>{{ msg.text }}</div>
                     </form>
                 {% endif %}
                 {% if msg.role == 'user' %}

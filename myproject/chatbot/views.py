@@ -1,5 +1,5 @@
-from chatbot.functions import openai_add_response, openai_change_preview_title, openai_update_message
-from chatbot.models import Bot, Chat, Message
+from .services import openai_add_response, openai_change_preview_title, openai_update_message
+from .models import Bot, Chat, Message
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
