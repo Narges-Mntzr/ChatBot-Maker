@@ -51,14 +51,16 @@ def create_chat(request):
 def home(request):
     if request.user.is_authenticated:
         user = request.user
+        query=""
         if request.GET.get("searchChat"):
-            sorted_chat_list = services.full_text_search(query=request.GET.get("searchChat")
+            query = request.GET.get("searchChat")
+            sorted_chat_list = services.full_text_search(query=query
                                                          ,search_vector = ["title", "message__text"],user=user)
         else:
             sorted_chat_list = user.chat_set.order_by('-last_message_date')
         chat_in_page = services.pagination(chat_list=sorted_chat_list,page = request.GET.get('page', 1))
         
-        return render(request,'chat-list.html', {"chat_in_page":chat_in_page,"searchChat":request.GET.get("searchChat")})
+        return render(request,'chat-list.html', {"chat_in_page":chat_in_page,"searchChat":query})
     else:
         return render(request,'landing.html')
 
