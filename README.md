@@ -111,7 +111,7 @@
     title: CharField(30) #به صورت خودکار بعد از اولین پیام ایجاد می‌شود.
     preview: TextField(50) #مرتبط با اولین پیام
     create_date: DateTimeField
-    last_message_date: models.DateTimeField #به صورت خودکار به کمک سیگنال‌ها بعد از هر پیام به‌روز می‌شود.
+    last_message_date: models.DateTimeField #به صورت خودکار بعد از تولید هر پیام به‌روز می‌شود.
 
 ### 5. Message
 

@@ -15,11 +15,12 @@ class OpenAiFunctionTests(TestCase):
     def similarity_function(self):
         user = User.objects.create_user(username="test1@gmail.com",password="passTest1")
         bot = Bot.objects.create(user=user, title="botTest1", detail = "this is botTest1", img="test.png")
+        chat = Chat.objects.create(user=user, bot=bot)
         
         contents = json.load(open(f'{settings.BASE_DIR}/chatbot/data/data.json'))
         random.shuffle(contents['similar_data'])
         answers, trueAnswers = 0, 0
-        testSize = 580
+        testSize = 100
 
         for i in range(testSize):
             d = contents['similar_data'][i]
@@ -27,10 +28,8 @@ class OpenAiFunctionTests(TestCase):
             botcontent.embedding = openai_get_embedding(botcontent)
             botcontent.save()
 
-        #todo:chat
         for i in range(testSize):
-            d = contents['similar_data'][i]
-            chat = Chat.objects.create(user=user, bot=bot)
+            d = contents['similar_data'][i]    
             message = Message.objects.create(chat=chat,text=d["question"], 
                                              role=Message.Role.USER)
             

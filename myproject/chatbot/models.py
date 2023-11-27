@@ -55,20 +55,3 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.text}"
-    
-    def get_prompt(self):
-        if(not self.related_botcontent):
-            return (
-                f'''
-                Check your answer several times and give acceptable answer to the following question.
-                Question: {self.text}
-                '''
-            )
-        
-        return (
-        f''' 
-        "{self.related_botcontent.text}"
-        Check your answer several times and give acceptable answer to the following question, The document above may help you, 
-        Question: {self.text}
-        '''
-        )
