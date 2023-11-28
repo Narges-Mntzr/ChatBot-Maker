@@ -11,6 +11,21 @@ from pgvector.django import CosineDistance
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY, base_url=settings.OPENAI_BASE_URL)
 
+def repeat(fun):
+    def repeat15(*args,**kwargs):
+        cnt = 0
+        while cnt<15:
+            try:
+                output = fun(*args,**kwargs)
+                break
+            except Exception as e:
+                cnt+=1
+                if (cnt==15):
+                    raise e
+        return output
+    
+    return repeat15
+
 def create_message(chat, text, role, previous_message = None, pub_date = timezone.now()):
     msg = chat.message_set.create(chat=chat,text=text,role=role,previous_message=previous_message,
                 pub_date = pub_date)
@@ -44,6 +59,7 @@ def get_prompt(Question, related_botcontent_text=None):
     Check your answer several times and give acceptable answer to the following question, The document above may help you, 
     Question: {Question}''')
 
+@repeat
 def openai_add_response(msg):
     msg.related_botcontent = similar_content(msg)
     msg.save()
@@ -66,6 +82,7 @@ def openai_add_response(msg):
     create_message(chat=msg.chat,text=response.choices[0].message.content,
             role=Message.Role.BOT,previous_message=msg)
 
+@repeat
 def openai_change_preview_title(msg):
     titlePrompt = f'''Choose a title for a conversation starter using this message
     with a maximum of 3 words.\n{msg.text}'''
@@ -80,6 +97,7 @@ def openai_change_preview_title(msg):
     msg.chat.preview = msg.text[:45]
     msg.chat.save()
 
+@repeat
 def openai_get_embedding(msg):
     response = client.embeddings.create(
         input = [msg.text],
@@ -87,6 +105,7 @@ def openai_get_embedding(msg):
     )
     return response.data[0].embedding
 
+@repeat
 def openai_update_message(msg):
     messages = [{"role":"system", "content":msg.chat.bot.prompt}] 
     # msg isn't first msg in chat
