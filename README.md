@@ -4,19 +4,9 @@ In this project, we aim to develop a website where users can create their own ch
 
 ## Technologies we used in our project:
 
-1.The main section of the project have been implemented using the Django framework. <br />
-2.The database used in the project is PostgreSQL. (The ankane/pgvector image has been utilized for using the pgvector extension.)<br /><br />
+1.The main section of the project have been implemented using the Django framework.
 
-## Users:
-
-### Admin
-The website admin has access to information about all users, bots, content, and created conversations, and can add, delete, or edit them.
-
-### Chatbot Maker
-A group of users to whom the website admin has granted access to create new bots. This group of users can view the bots and content they have created and, if necessary, edit them
-
-### Normal User
-This category includes all website users who can register on the site and, upon logging in, initiate new conversations with the available bots on the site. They can also view their previous conversations and continue the conversation if the bot is still active.
+2.The database used in the project is PostgreSQL. (The ankane/pgvector image has been utilized for using the pgvector extension.)
 
 ## Main Processes of the Website:
 
