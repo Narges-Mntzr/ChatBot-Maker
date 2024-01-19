@@ -1,4 +1,4 @@
-## ChatBot-Builder
+## ChatBot-Maker
 
 In this project, we aim to develop a website where users can create their own chatbots for their specific data. Users start by entering their desired data (knowledge base) into the software and then create a chatbot that responds to user queries based on the entered data. Other users can engage in conversations with these created bots and ask them questions based on their content.
 
